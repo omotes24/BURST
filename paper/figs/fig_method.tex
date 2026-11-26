@@ -1,0 +1,82 @@
+% fig_method.tex -- the method in pictures (TikZ, drawn by hand; absolute coordinates in cm, natural width 17.6 cm = \textwidth).
+%   (a) test time: one forward pass of the frozen denoiser, stopped at block X; two descriptors: f (mean and std of the block U)
+%       and z (one number per block up to X: the comb under the blocks).
+%   (b) once, before: the train images upright and transposed: the upright descriptor is kept, the transposed one gives
+%       one number per train image, the transposition distance tau.
+%   (c) per descriptor: the distance r to a train image is measured in units of its transposition distance.
+%   Colours: black, navy (U, f, train images), red (X, z, the input in panel c).  Schematic.
+\providecommand{\figlab}{\fontsize{6.2}{7.6}\selectfont}
+\begin{tikzpicture}[font=\figlab, >={Stealth[length=1.6mm, width=1.3mm]}, line join=round, line cap=round,
+  lab/.style={font=\figlab, inner sep=1pt, align=center}, ttl/.style={font=\scriptsize, anchor=south west, inner sep=0pt}]
+%% ================================================================ (a) test time
+\node[ttl] at (0,0.15) {\textbf{(a)}\ テスト時：1回の順伝播を途中で打ち切り, 2つの記述子を読む};
+\node[inner sep=0, draw=black, line width=0.6pt] (img) at (0.6,-1.55) {\includegraphics[width=1.05cm]{figs/o0.png}};
+\node[lab, anchor=north] at (0.6,-2.16) {入力画像 $x$};
+\draw[->] (1.2,-1.55) -- node[above, lab] {$+\sigma_1\varepsilon$} (1.87,-1.55);
+% the blocks of the denoiser, left edge / height: encoder (32, 32, 16, 16, 8, 8), decoder (8, U at 8, 16, X at 16), then two blocks at 32
+% that are not computed.  One red tick per block up to X: one number per block (the amplitude), collected on the red line.
+\def\ybus{-2.68}
+\foreach \xl/\h in {1.95/1.8, 2.22/1.8, 2.57/1.25, 2.84/1.25, 3.19/0.78, 3.46/0.78, 3.81/0.78, 4.08/0.78, 4.43/1.25, 4.70/1.25}{
+  \draw[redc, line width=0.5pt] ({\xl+0.1},{-1.55-\h/2}) -- ({\xl+0.1},\ybus);
+  \fill[redc] ({\xl+0.1},\ybus) circle (0.035);}
+\foreach \xl/\h in {1.95/1.8, 2.22/1.8, 2.57/1.25, 2.84/1.25, 3.19/0.78, 3.46/0.78, 3.81/0.78, 4.43/1.25}
+  \draw[black, fill=white, line width=0.7pt] (\xl,{-1.55-\h/2}) rectangle ++(0.2,\h);
+\draw[navyc, fill=navyc!35, line width=0.9pt] (4.08,-1.94) rectangle ++(0.2,0.78);
+\draw[redc, fill=redc!25, line width=0.9pt] (4.70,-2.175) rectangle ++(0.2,1.25);
+\foreach \xl in {5.05, 5.32}
+  \draw[black!45, densely dashed, line width=0.5pt] (\xl,-2.45) rectangle ++(0.2,1.8);
+\draw[redc, line width=0.5pt] (2.05,\ybus) -- (4.80,\ybus);
+\node[lab, anchor=south] at (2.8,-0.6) {エンコーダ};
+\node[lab, anchor=south west] at (4.34,-0.6) {デコーダ};
+\node[lab, anchor=south east, text=navyc] at (4.15,-1.15) {\textbf{U}};
+\node[lab, anchor=south, text=redc] at (4.80,-0.92) {\textbf{X}};
+\node[lab, anchor=north west, text=black!60] at (4.98,-2.5) {計算しない};
+\node[lab, anchor=north west, align=left] at (0.0,-2.98) {凍結したノイズ除去器\\\textcolor{navyc}{\textbf{U}}：読み出しブロック\\\textcolor{redc}{\textbf{X}}：打ち切りブロック};
+% the two descriptors
+\node[draw=navyc, rounded corners=2pt, line width=0.8pt, inner sep=3pt, align=left, font=\figlab, text width=21mm, anchor=north west] (fbox) at (6.1,-0.45)
+  {$f$：U の出力の,\\チャネルごとの\\平均と標準偏差};
+\node[draw=redc, rounded corners=2pt, line width=0.8pt, inner sep=3pt, align=left, font=\figlab, text width=21mm, anchor=north west] (zbox) at (6.1,-2.92)
+  {$z$：X までの\\各ブロックの出力から\\数値を1つずつ};
+\draw[->, navyc, line width=0.7pt] (4.18,-1.16) -- (4.18,-0.12) -- (7.2,-0.12) -- (7.2,-0.45);
+\draw[->, redc, line width=0.7pt] (3.425,\ybus) -- (3.425,-3.43) -- (6.1,-3.43);
+%% ================================================================ (b) the bank
+\node[ttl] at (8.75,0.15) {\textbf{(b)}\ 事前：正立と転置の2通り};
+\draw[black!45, rounded corners=3pt] (8.75,-0.15) rectangle (12.25,-4.38);
+\node[inner sep=0, draw=navyc, line width=1.5pt] (b0) at (9.55,-1.0) {\includegraphics[width=1.05cm]{figs/o0.png}};
+\node[inner sep=0, draw=black!55, line width=0.5pt] (b1) at (11.45,-1.0) {\includegraphics[width=1.05cm]{figs/o5.png}};
+\draw[black!45, densely dashed, line width=0.4pt] (b0.north west) -- (b0.south east);
+\draw[->, black, line width=0.6pt] (b0.east) -- node[above, lab, inner sep=1.5pt] {転置} (b1.west);
+\node[lab, anchor=north, text=navyc] at (9.55,-1.6) {$x_i$}; \node[lab, anchor=north] at (11.45,-1.6) {$\mathbf{T}x_i$};
+\draw[navyc, line width=1.0pt] (8.98,-2.46) rectangle ++(0.15,0.15);
+\node[lab, anchor=west, align=left, text=navyc] at (9.2,-2.52) {そのまま(正立)の $N$ 枚\\→ バンク(推論時に持つ)};
+\draw[black!55, line width=0.6pt] (8.98,-3.2) rectangle ++(0.15,0.15);
+\node[lab, anchor=west, align=left, text=black!75] at (9.2,-3.26) {転置した1枚までの距離\\→ 転置距離 $\tau$(1つの数)};
+\node[lab, anchor=west, text=black!60] at (8.95,-4.03) {ノイズ $\varepsilon$ は転置しない};
+%% ================================================================ (c) the score
+\node[ttl] at (12.55,0.15) {\textbf{(c)}\ 距離を, 転置距離を単位にして測る};
+\draw[black!45, rounded corners=3pt] (12.55,-0.15) rectangle (17.6,-4.38);
+% left: a train image with a large transposition distance, the input closer than tau; right: a small one, the input farther (the same distance r)
+\coordinate (A) at (13.72,-1.33);
+\draw[navyc!55, densely dashed, line width=0.5pt] (A) circle (0.9);
+\draw[navyc, line width=0.7pt] (A) -- node[pos=0.5, below, inner sep=1.8pt, text=navyc, font=\figlab] {$\tau$} ($(A)+(200:0.9)$);
+\draw[navyc, fill=white, line width=0.6pt] ($(A)+(200:0.9)+(-0.06,-0.06)$) rectangle ++(0.12,0.12);
+\fill[navyc] (A) circle (0.06);
+\draw[black, line width=0.6pt] (A) -- node[pos=0.5, above left, inner sep=0.5pt, font=\figlab] {$r$} ($(A)+(40:0.45)$);
+\node[star, star points=5, star point ratio=2.2, fill=redc, inner sep=1.2pt] at ($(A)+(40:0.45)$) {};
+\node[lab] at (13.72,-2.47) {$\tau/r>1$：分布内らしい};
+\coordinate (B) at (16.3,-1.33);
+\draw[navyc!55, densely dashed, line width=0.5pt] (B) circle (0.26);
+\draw[navyc, line width=0.7pt] (B) -- ($(B)+(200:0.26)$);
+\draw[navyc, fill=white, line width=0.6pt] ($(B)+(200:0.26)+(-0.06,-0.06)$) rectangle ++(0.12,0.12);
+\fill[navyc] (B) circle (0.06);
+\draw[black, line width=0.6pt] (B) -- ($(B)+(40:0.45)$);
+\node[lab] at ($(B)+(62:0.62)$) {$r$};
+\node[star, star points=5, star point ratio=2.2, fill=redc, inner sep=1.2pt] at ($(B)+(40:0.45)$) {};
+\node[lab, text=navyc] at ($(B)+(-0.42,-0.38)$) {$\tau$};
+\node[lab] at (16.3,-2.47) {$\tau/r<1$：分布外らしい};
+\fill[navyc] (12.86,-2.86) circle (0.055); \node[lab, anchor=west, text=navyc] at (12.94,-2.86) {train 画像};
+\draw[navyc, fill=white, line width=0.6pt] (14.2,-2.92) rectangle ++(0.12,0.12); \node[lab, anchor=west, text=navyc] at (14.36,-2.86) {転置した train 画像};
+\node[star, star points=5, star point ratio=2.2, fill=redc, inner sep=0.95pt] at (16.72,-2.86) {}; \node[lab, anchor=west] at (16.82,-2.86) {入力};
+\node[draw=black, rounded corners=2pt, line width=0.9pt, inner sep=3pt, align=left, font=\figlab, text width=45mm, anchor=north] at (15.075,-3.13)
+  {$\log(\tau/r)$ を, 近い train 画像から順に\\$1/k$ の重みで平均する：$B_g(x)$\\$s(x)=d_f B_f(x)+d_z B_z(x)$\ \ [式~(\ref{eq:B}),\,(\ref{eq:score})]};
+\end{tikzpicture}

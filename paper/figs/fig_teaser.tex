@@ -1,0 +1,65 @@
+% fig_teaser.tex -- Figure 1 (in the title block, full width): the idea in three panels.
+%   (a) the nearest-neighbour distance has no unit: two inputs at the same distance r from their nearest train image
+%   (b) one transposition as the unit: the train image and its transposed copy; the distance tau between their descriptors; r measured in units of tau (same geometry as (a))
+%   (c) real scores (figs/fig_hist_in64.tex, written by gen/mk.py): ImageNet-64 against iNaturalist, distance only and TRA
+% Colours: navy = train images (kept at inference), white square = the transposed copy (used once), red = the input / OOD.
+\begingroup
+\tikzset{tz/.style={font=\figlab, line cap=round, line join=round}, lab/.style={font=\figlab, inner sep=1pt, align=center},
+  tr/.style={circle, fill=navyc, inner sep=0, minimum size=4.2pt}, cp/.style={rectangle, draw=navyc, fill=white, line width=0.6pt, inner sep=0, minimum size=4.0pt},
+  inp/.style={star, star points=5, star point ratio=2.2, fill=redc, inner sep=1.2pt}}
+\newcommand{\paneltitle}[1]{{\fontsize{7.4}{9}\selectfont\bfseries #1}\\[0.6mm]}
+\noindent
+\begin{minipage}[t][47mm][t]{35mm}\centering
+\paneltitle{(a) 距離には単位がない}
+\begin{tikzpicture}[tz]
+\useasboundingbox (0,-0.45) rectangle (3.5,3.55);
+\coordinate (A) at (0.75,1.85); \coordinate (B) at (2.45,1.85);
+\node[tr] at (A) {}; \node[tr] at (B) {};
+\draw[black, line width=0.6pt] (A) -- node[pos=0.5, above left, inner sep=0.6pt, lab] {$r$} ($(A)+(40:0.55)$);
+\draw[black, line width=0.6pt] (B) -- node[pos=0.5, above left, inner sep=0.6pt, lab] {$r$} ($(B)+(40:0.55)$);
+\node[inp] at ($(A)+(40:0.55)$) {}; \node[inp] at ($(B)+(40:0.55)$) {};
+\node[lab, text=navyc] at ($(A)+(0,-0.3)$) {$x_i$}; \node[lab, text=navyc] at ($(B)+(0,-0.3)$) {$x_j$};
+\node[lab] at (1.75,0.75) {同じ距離 $r$.\\[1pt]近いのか, 遠いのか?};
+\node[tr] at (0.3,0.05) {}; \node[lab, anchor=west] at (0.42,0.05) {train 画像};
+\node[inp, inner sep=0.95pt] at (2.0,0.05) {}; \node[lab, anchor=west] at (2.12,0.05) {入力};
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[t][47mm][t]{66mm}\centering
+\paneltitle{(b) 転置1つを長さの単位にする}
+\begin{tikzpicture}[tz, >={Stealth[length=1.5mm, width=1.2mm]}]
+\useasboundingbox (0,-0.45) rectangle (6.6,3.55);
+% the train image and its transposed copy
+\node[inner sep=0, anchor=south west, draw=navyc, line width=1pt] (im0) at (0.75,2.62) {\includegraphics[width=0.78cm]{figs/o0.png}};
+\node[inner sep=0, anchor=south west, draw=black!55, line width=0.5pt] (im1) at (2.55,2.62) {\includegraphics[width=0.78cm]{figs/o5.png}};
+\draw[black!45, densely dashed, line width=0.4pt] (im0.north west) -- (im0.south east);
+\draw[->, black, line width=0.6pt] (im0.east) -- node[above, lab, inner sep=1.5pt] {転置} (im1.west);
+\node[lab, anchor=east, text=navyc] at (0.68,3.01) {$x_i$};
+\node[lab, anchor=west, align=left] at (3.5,3.01) {$\mathbf{T}x_i$：縦と横を入れ替える.\\記述子が $\tau$ だけ動く.};
+% left: a large transposition distance, the input closer than tau
+\coordinate (A) at (1.55,1.25);
+\draw[navyc!55, densely dashed, line width=0.5pt] (A) circle (0.9);
+\draw[navyc, line width=0.7pt] (A) -- node[pos=0.5, below, inner sep=1.8pt, lab, text=navyc] {$\tau$} ($(A)+(200:0.9)$);
+\node[cp] at ($(A)+(200:0.9)$) {}; \node[tr] at (A) {};
+\draw[black, line width=0.6pt] (A) -- node[pos=0.5, above left, inner sep=0.6pt, lab] {$r$} ($(A)+(40:0.55)$);
+\node[inp] at ($(A)+(40:0.55)$) {};
+\node[lab] at (1.55,-0.12) {$\tau/r>1$：分布内らしい};
+% right: a small transposition distance, the input farther than tau
+\coordinate (B) at (4.75,1.25);
+\draw[navyc!55, densely dashed, line width=0.5pt] (B) circle (0.27);
+\draw[navyc, line width=0.7pt] (B) -- ($(B)+(200:0.27)$);
+\node[cp] at ($(B)+(200:0.27)$) {}; \node[tr] at (B) {};
+\draw[black, line width=0.6pt] (B) -- ($(B)+(40:0.55)$);
+\node[lab] at ($(B)+(64:0.66)$) {$r$};
+\node[inp] at ($(B)+(40:0.55)$) {};
+\node[lab, text=navyc] at ($(B)+(-0.42,-0.38)$) {$\tau$};
+\node[lab] at (4.75,-0.12) {$\tau/r<1$：分布外らしい};
+\node[cp] at (2.74,0.62) {}; \node[lab, anchor=west] at (2.86,0.62) {転置した train 画像};
+\draw[navyc!55, densely dashed, line width=0.5pt] (2.62,0.3) -- (2.88,0.3); \node[lab, anchor=west] at (2.92,0.3) {半径 $\tau$};
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[t][47mm][t]{70mm}\centering
+\paneltitle{(c) ImageNet-64 と iNaturalist のスコアの分布}
+\vspace{0.5mm}
+\input{figs/fig_hist_in64}
+\end{minipage}
+\endgroup
