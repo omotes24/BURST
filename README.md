@@ -8,7 +8,7 @@
 <h3 align="center">破れた対称性による拡散モデルの分布外検知</h3>
 
 <p align="center">
-  表 紘太朗&emsp;尾崎 慶次郎&emsp;中澤 仁<br>
+  表 紘太朗<br>
   <sub>慶應義塾大学</sub>
 </p>
 
