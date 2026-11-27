@@ -61,14 +61,14 @@ $`\tau_g(i)=|g(x_i)-g(\mathbf{T}x_i)|`$ は train 画像 $`x_i`$ の転置距離
 ## 使い方
 
 ```python
-from burst_score import build_bank, burst    # code/burst_score.py
+from burst_score import build_bank, burst   # code/burst_score.py
 
-bank_f = build_bank(Gf, unit=True)   # Gf: [N, 2, D]  train 画像の f(0: そのまま、1: 転置。長さ1に正規化)
-bank_z = build_bank(Gz)              # Gz: [N, 2, X]  train 画像の z(正立の train 画像で標準化)
-s = burst(Qf, Qz, bank_f, bank_z)    # 入力の f と z から、スコア(大きいほど分布内らしい)
+bank_f = build_bank(Gf, unit=True)   # Gf: [N, 2, D]  train 画像の f(そのまま、転置)
+bank_z = build_bank(Gz)              # Gz: [N, 2, X]  train 画像の z(そのまま、転置)
+s = burst(Qf, Qz, bank_f, bank_z)    # 大きいほど分布内らしい
 ```
 
-記述子は、凍結したノイズ除去器を打ち切りブロックまで1回通して求めます。この順伝播の部分は、このリポジトリには含みません。
+$`f`$ は長さ1に正規化し、$`z`$ は正立の train 画像の平均と標準偏差で標準化してから渡します。記述子は、凍結したノイズ除去器を打ち切りブロックまで1回通して求めます(この部分はリポジトリに含みません)。
 
 ## 構成
 
